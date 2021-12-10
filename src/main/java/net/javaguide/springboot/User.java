@@ -14,32 +14,18 @@ import java.util.List;
 public class User {
 	
 	@Id
-	@Column(name="email")
-	private String email;
+	@Column(name="username")
+	private String username;
 	@Column(name="name")
 	private String name;
+	@Column(name="email")
+	private String email;
 	@Column(name="pass")
 	private String pass;
 	@Column(name="age")
 	private int age;
-	@Column(name="author")
+	@Column(name="isAuthor")
 	private boolean isAuthor;
-	@Column(name="lat")
-	private int latitude;
-	@Column(name="lon")
-	private int longitude;
-	public int getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(int latitude) {
-		this.latitude = latitude;
-	}
-	public int getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(int longitude) {
-		this.longitude = longitude;
-	}
 	@ElementCollection
 	private List<String> following;
 	@ElementCollection
@@ -48,81 +34,104 @@ public class User {
 	private List<Integer> books;
 	
 	public User() {
-		following=new LinkedList<>();
-		followers=new LinkedList<>();
-		books=new LinkedList<>();
+		following = new LinkedList<>();
+		followers = new LinkedList<>();
+		books = new LinkedList<>();
 	}
-	public User(String name, String email,String pass, int age, boolean isAuthor,int latitude,int longitude) {
+	
+	public User(String username, String name, String email, String pass, int age, boolean isAuthor) {
 		super();
+		this.username = username;
 		this.name = name;
 		this.email = email;
+		this.pass = pass;
 		this.age = age;
 		this.isAuthor = isAuthor;
-		this.pass=pass;
-		this.latitude=latitude;
-		this.longitude=longitude;
-		following=new LinkedList<>();
-		followers=new LinkedList<>();
-		books=new LinkedList<>();
-		
+		following = new LinkedList<>();
+		followers = new LinkedList<>();
+		books = new LinkedList<>();
 	}
-	public String getPass() {
-		return pass;
+
+	public String getUsername() {
+		return username;
 	}
-	public void setPass(String pass) {
-		this.pass = pass;
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public String getPass() {
+		return pass;
+	}
+
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+
 	public int getAge() {
 		return age;
 	}
+
 	public void setAge(int age) {
 		this.age = age;
 	}
+
 	public boolean isAuthor() {
 		return isAuthor;
 	}
+
 	public void setAuthor(boolean isAuthor) {
 		this.isAuthor = isAuthor;
 	}
-	public void addFollower(String u) {
-		followers.add(u);
+
+	public List<String> getFollowing() {
+		return following;
 	}
-	public void delFollower(String u) {
-		followers.remove(u);
+
+	public void follow(String username) {
+		following.add(username);
 	}
-	public void addFollowing(String u) {
-		following.add(u);
+	public void unfollow(String username) {
+		following.remove(username);
 	}
-	public void delFollowing(String u) {
-		following.remove(u);
+
+	public List<String> getFollowers() {
+		return followers;
 	}
-	public void addBook(Integer b) {
-		books.add(b);
+
+	public void addFollower(String username) {
+		followers.add(username);
 	}
-	public void delBook(Integer b) {
-		books.remove(b);
+	public void removeFollower(String username) {
+		followers.remove(username);
 	}
 	public List<Integer> getBooks() {
 		return books;
 	}
-	public List<String> getFollowers() {
-		return followers;
-	}
-	public List<String> getFollowing() {
-		return following;
+
+	public void addBook(int book) {
+		books.add((Integer) book);
 	}
 	
+	public void deleteBook(int book) {
+		books.remove((Integer) book);
+	}
 	
+
 }

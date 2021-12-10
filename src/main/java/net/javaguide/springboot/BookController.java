@@ -1,6 +1,10 @@
 package net.javaguide.springboot;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,25 +22,54 @@ public class BookController {
 	
 	@Autowired
 	private BookRepository br;
+	
 	@PostMapping("addBook")  
-	public void addBook(@RequestBody Book b){
-		br.save(b);
+	public Book addBook(@RequestBody Book b){
+		return br.save(b);
 	}
-	@PutMapping("updateOwner/{barCode}/{email}")  
-	public void updateOwner(@PathVariable("barCode") int barCode,@PathVariable("email") String email){
-		Book b=br.getById(barCode);
-		b.setUserEmail(email);
+	@PutMapping("updateOwner/{id}/{username}")  
+	public void updateOwner(@PathVariable("id") String id,@PathVariable("username") String username){
+		Book b=br.getById(Integer.parseInt(id));
+		b.setUsername(username);
 		br.save(b);
 	}
 	
-	@DeleteMapping("deleteBook/{barCode}")  
-	public void deleteBook(@PathVariable("barCode") int barCode){
-		br.delete(br.findById(barCode).get());
+	@DeleteMapping("deleteBook/{id}")  
+	public void deleteBook(@PathVariable("id") String id){
+		br.delete(br.findById(Integer.parseInt(id)).get());
 	}
 	
 	@GetMapping("books")
 	public List<Book> getBooks() {
 		return br.findAll();
+	}
+	@GetMapping("getBook/{id}")
+	public Book getBook(@PathVariable("id") String id) {
+		return br.findById(Integer.parseInt(id)).get();
+	}
+	@GetMapping("getBookByName/{title}")
+	public List<Book> getBookByName(@PathVariable("title") String title) {
+		List<Book> list=new LinkedList<>();
+		for(Book b:br.findAll()) {
+			if(b.getTitle().contains(title)) {
+				list.add(b);
+			}
+		}
+		return list;
+	}
+	@GetMapping("getBookByGenre/{genre}")
+	public List<Book> getBookByGenre(@PathVariable("genre") String genre) {
+		Map<Book,Boolean> m=new HashMap<>();
+		List<Book> list=new LinkedList<>();
+		for(Book b:br.findAll()) {
+			for(String  s:b.getGenre()) {
+				if(s.contains(genre) && (m.get(b)==null || !m.get(b))) {
+					list.add(b);
+					m.put(b, true);
+				}
+			}
+		}
+		return list;
 	}
 
 }
