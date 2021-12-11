@@ -43,18 +43,20 @@ public class UserController {
 		return ur.findAll();
 	}
 	@GetMapping("getBooks/{username}")
-	public List<Integer> getBooksFromUser(@PathVariable("username") String username) {
+	public List<Book> getBooksFromUser(@PathVariable("username") String username) {
 		return ur.getById(username).getBooks();
 	}
+
 	
 	@PostMapping("addBook/{username}")  
 	public void addBookToUser(@PathVariable("username") String username,@RequestBody Book b) throws URISyntaxException{
 		User u=ur.getById(username);
+		b.setUsername(username);
 		final String uri = "http://localhost:8080/api/book/addBook";
 		URI url=new URI(uri);
 	    RestTemplate restTemplate = new RestTemplate();
 	    Book res=restTemplate.postForObject(url,b,Book.class);
-		u.addBook(res.getId());
+		u.addBook(res);
 		ur.save(u);
 	}
 	
@@ -65,7 +67,7 @@ public class UserController {
 		URI url=new URI(uri);
 	    RestTemplate restTemplate = new RestTemplate();
 	    restTemplate.delete(url);
-		u.deleteBook(id);
+	    u.deleteBook(id);
 		ur.save(u);
 	}
 
@@ -76,8 +78,9 @@ public class UserController {
 		URI url=new URI(uri);
 	    RestTemplate restTemplate = new RestTemplate();
 	    restTemplate.put(url, null);
+	    Book b = u1.getBook(id);
 		u1.deleteBook(id);
-		u2.addBook(id);
+		u2.addBook(b);
 		ur.save(u1);
 		ur.save(u2);
 	}
@@ -129,4 +132,5 @@ public class UserController {
 	    RestTemplate restTemplate = new RestTemplate();
 	    return ur.findById(restTemplate.getForObject(url, Book.class).getUsername()).get();
 	}
+
 }

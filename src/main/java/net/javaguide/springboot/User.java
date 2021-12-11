@@ -31,7 +31,7 @@ public class User {
 	@ElementCollection
 	private List<String> followers;
 	@ElementCollection
-	private List<Integer> books;
+	private List<Book> books;
 	
 	public User() {
 		following = new LinkedList<>();
@@ -121,16 +121,29 @@ public class User {
 	public void removeFollower(String username) {
 		followers.remove(username);
 	}
-	public List<Integer> getBooks() {
+	public List<Book> getBooks() {
 		return books;
 	}
 
-	public void addBook(int book) {
-		books.add((Integer) book);
+	public void addBook(Book book) {
+		books.add(book);
 	}
 	
-	public void deleteBook(int book) {
-		books.remove((Integer) book);
+	public void deleteBook(int id) {
+		for(Book b: books) {
+			if(b.getId()==id) {
+				books.remove(b);
+			}
+		}
+	}
+	
+	public Book getBook(int id) {
+		for(Book b: books) {
+			if(b.getId()==id) {
+				return b;
+			}
+		}
+		return null;
 	}
 	
 
