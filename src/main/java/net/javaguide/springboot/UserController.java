@@ -1,7 +1,6 @@
 package net.javaguide.springboot;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -43,8 +43,17 @@ public class UserController {
 		return ur.findAll();
 	}
 	@GetMapping("getBooks/{username}")
-	public List<Book> getBooksFromUser(@PathVariable("username") String username) {
-		return ur.getById(username).getBooks();
+	public List<Book> getBooksFromUser(@PathVariable("username") String username) throws URISyntaxException {
+		List <Integer> b=ur.getById(username).getBooks();
+		List<Book> res=new LinkedList<>();
+		for(int bookId:b) {
+			final String uri = "http://localhost:8080/api/book/getBook/"+bookId;
+			URI url=new URI(uri);
+		    RestTemplate restTemplate = new RestTemplate();
+		    Book restBook=restTemplate.getForObject(url, Book.class);
+			res.add(restBook);
+		}
+		return res;
 	}
 
 	
@@ -56,18 +65,7 @@ public class UserController {
 		URI url=new URI(uri);
 	    RestTemplate restTemplate = new RestTemplate();
 	    Book res=restTemplate.postForObject(url,b,Book.class);
-		u.addBook(res);
-		ur.save(u);
-	}
-	
-	@DeleteMapping("deleteBook/{username}/{id}")  
-	public void deleteBookFromUser(@PathVariable("username") String username,@PathVariable("id") int id) throws URISyntaxException{
-		User u=ur.getById(username);
-		final String uri = "http://localhost:8080/api/book/deleteBook/"+id;
-		URI url=new URI(uri);
-	    RestTemplate restTemplate = new RestTemplate();
-	    restTemplate.delete(url);
-	    u.deleteBook(id);
+		u.addBook(res.getId());
 		ur.save(u);
 	}
 
@@ -78,9 +76,8 @@ public class UserController {
 		URI url=new URI(uri);
 	    RestTemplate restTemplate = new RestTemplate();
 	    restTemplate.put(url, null);
-	    Book b = u1.getBook(id);
 		u1.deleteBook(id);
-		u2.addBook(b);
+		u2.addBook(id);
 		ur.save(u1);
 		ur.save(u2);
 	}
